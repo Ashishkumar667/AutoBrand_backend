@@ -1,12 +1,38 @@
-import Brand from "../models/brandModel/brand.js";
+import Brand from "../../models/brandmodel/brand.js";
+import User from "../../models/userModel/user.js";
+import { PLAN_LIMITS } from "../../utils/planLimit/planlimit.js";
 
 export const addBrand = async (req, res) => {
   const { brandName, productUrls } = req.body;
+
   try {
-    const newBrand = new Brand({ userId: req.user._id, brandName, productUrls });
+    const userId = req.user._id;
+
+    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const userPlan = user.plan || "free";  
+    const allowedLimit = PLAN_LIMITS[userPlan];
+
+  
+    const existingBrandCount = await Brand.countDocuments({ userId });
+
+    
+    if (existingBrandCount >= allowedLimit) {
+      return res.status(403).json({
+        error: `🚫 You are on the ${userPlan.toUpperCase()} plan. You can add only ${allowedLimit} brands.`
+      });
+    }
+
+    
+    const newBrand = new Brand({ userId, brandName, productUrls });
     await newBrand.save();
-    res.status(201).json({ message: "Brand added", brand: newBrand });
+
+    res.status(201).json({ message: "✅ Brand added", brand: newBrand });
+
   } catch (err) {
+    console.error("Error adding brand:", err);
     res.status(500).json({ error: err.message });
   }
 };

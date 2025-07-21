@@ -1,6 +1,7 @@
 import express from 'express';
 import {
-  getAllBrands,
+  getUserBrands,
+  getBrandById,
   addBrand,
   updateBrand,
   deleteBrand
@@ -13,10 +14,10 @@ const router = express.Router();
 
 router.post('/add/brand', authMiddleware, addBrand);
 
-router.get('/all/brands', authMiddleware, getAllBrands);
+router.get('/all/brands', authMiddleware, getUserBrands);
 
 
-router.get('/:id', authMiddleware, getBrandById);
+router.get('/:id', getBrandById);
 
 
 router.put('/update/:id/brand', authMiddleware, updateBrand);

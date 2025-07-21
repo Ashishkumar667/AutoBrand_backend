@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from "dotenv";
 dotenv.config();
@@ -32,18 +32,31 @@ const userSchema = new mongoose.Schema({
         stripeCustomerId: String,
         competitorBrands: [{ type: mongoose.Schema.Types.ObjectId, ref: "Brand" }],
     },
+    planExpiry:{
+        type: Date,
+    },
     otp: { 
         type: String 
     },
     otpExpires: { 
         type: Date 
+    },
+    resetOtpExpires:{
+        type:Date
+    },
+    resetOtp:{
+        type: String
+    },
+    resetOtpVerified:{
+        type: Boolean,
+        default: false
     }
 })
 
 //pre save hook to hash password before saving
 userSchema.pre('save', async function(next) {
     if (this.isModified('password')) {
-        this.password = await bcrypt.default.hash(this.password, 10);
+        this.password = await bcrypt.hash(this.password, 10);
     }
     next();
 });

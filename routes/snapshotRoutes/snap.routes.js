@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSnapshotsByBrand } from '../controllers/snapshotController.js';
+import { getSnapshotsByBrand } from '../../controllers/snapController/snapshotController.js';
 import authMiddleware from '../../middleware/auth.js';
 
 const router = express.Router();
