@@ -84,6 +84,8 @@ export const generateInsight = async (req, res) => {
 
     const insight = completion.choices[0].message.content;
 
+    console.log("AI is calling", insight);  //this will check if the AI is calling or not 
+
     if (plan === "free") {
       await redis.setex(cacheKey, 3600, JSON.stringify(insight)); 
     }

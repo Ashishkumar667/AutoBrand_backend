@@ -1,36 +1,3 @@
-// import Brand from '../models/brandmodel/brand.js';
-// import Snapshot from '../models/snapmodel/snapshot.js';
-// import scrapeProductPage from '../utils/scraper.js'
-// import cron from 'node-cron';
-
-// function scraperScheduler() {
-//   cron.schedule("0 */6 * * *", async () => {  //0 */6
-//     console.log("Running scheduled scraper...");
-//     const brands = await Brand.find();
-
-//     for (const brand of brands) {
-//       for (const url of brand.productUrls) {
-//         try {
-//           const data = await scrapeProductPage(url);
-//           await Snapshot.create({
-//             brandId: brand._id,
-//             productName: data.productName,
-//             productUrl: url,
-//             price: data.price,
-//             discountPercent: data.discountPercent,
-//             inStock: data.inStock,
-//           });
-//           console.log(`Scraped and saved data for ${data.productName}`);
-//         } catch (err) {
-//           console.error("Error scraping:", url, err);
-//         }
-//       }
-//     }
-//   });
-// }
-
-// export default scraperScheduler;
-
 import cron from "node-cron";
 import puppeteer from "puppeteer";
 import Brand from "../models/brandmodel/brand.js";
@@ -40,13 +7,24 @@ import User from "../models/userModel/user.js";
 import { sendPriceDropEmail } from "../utils/sendEmail/AlertEmail/emailAlert.js";
 
 async function scraperScheduler() {
-  cron.schedule("* * * * *", async () => { //0 */6
+  cron.schedule("0 */6 * * *", async () => { 
     console.log("⏳ Running scheduled scraper...");
 
     const brands = await Brand.find();
     if (!brands.length) return console.log("No brands found!");
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+  headless: true,
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--disable-software-rasterizer",
+    "--single-process",
+  ],
+});
     const page = await browser.newPage();
 
     for (const brand of brands) {
