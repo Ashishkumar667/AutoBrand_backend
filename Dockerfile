@@ -1,7 +1,5 @@
-# Use official Node.js image
 FROM node:20-slim
 
-# Install dependencies for Puppeteer (Chrome)
 RUN apt-get update && apt-get install -y \
   chromium \
   ca-certificates \
@@ -43,22 +41,16 @@ RUN apt-get update && apt-get install -y \
   xdg-utils \
   && rm -rf /var/lib/apt/lists/*
 
-# Set working dir
 WORKDIR /app
 
-# Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy all source code
 COPY . .
 
-# Puppeteer will use installed Chromium
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Expose your app port
 EXPOSE 3000
 
-# Start the app
 CMD ["node", "index.js"]
 

@@ -40,7 +40,7 @@ import User from "../models/userModel/user.js";
 import { sendPriceDropEmail } from "../utils/sendEmail/AlertEmail/emailAlert.js";
 
 async function scraperScheduler() {
-  cron.schedule("0 */6 * * *", async () => {
+  cron.schedule("* * * * *", async () => { //0 */6
     console.log("⏳ Running scheduled scraper...");
 
     const brands = await Brand.find();

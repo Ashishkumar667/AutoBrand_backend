@@ -95,7 +95,7 @@
 
 import puppeteer from "puppeteer";
 
-// ✅ Helper to detect stock status more reliably
+
 function isInStock(text) {
   const lower = text.toLowerCase();
   return !(

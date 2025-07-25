@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from "dotenv";
 import sendEmail from '../../utils/sendEmail/email.js';
+import { generateVerificationEmail } from '../../utils/sendEmail/EmailVerification/emailVerification.js';
 dotenv.config();
 
 
@@ -32,8 +33,8 @@ export const registerUser = async( req, res) =>{
         NewUser.otpExpires = Date.now() + 10 * 60 * 1000; 
         await NewUser.save();
         
-        await sendEmail(NewUser.email, "Your OTP Code", `Your OTP is: ${otp}`); 
-        
+        await generateVerificationEmail(NewUser.email, otp); 
+
         return res.status(201).json({ message:
              "User registered successfully.We have sent a OTP, so please verify your email to continue.",
          user:{
@@ -107,16 +108,16 @@ export const UserProfile = async(req, res) =>{
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 export const sendOtp = async (req, res) => {
-  const { email, purpose } = req.body; // purpose = 'verifyEmail' | 'resetPassword'
+  const { email, purpose } = req.body; 
   
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOtp();
     const hashedOtp = await bcrypt.hash(otp, 10);
 
-    // Save OTP & expiry based on purpose
+    
     if (purpose === "verifyEmail") {
       user.otp = hashedOtp;
       user.otpExpires = Date.now() + 10 * 60 * 1000;
@@ -129,7 +130,7 @@ export const sendOtp = async (req, res) => {
 
     await user.save();
 
-    // Different email template based on purpose
+   
     let subject, emailContent;
 
     if (purpose === "verifyEmail") {

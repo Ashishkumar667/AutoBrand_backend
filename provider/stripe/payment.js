@@ -264,7 +264,7 @@ export const stripeWebhook = async (req, res) => {
       </tr>
       <tr>
         <td style="padding: 30px; text-align: left; color: #333;">
-          <p style="font-size: 18px; font-weight: 600;">Hi there,</p>
+          <p style="font-size: 18px; font-weight: 600;">${User.Name},</p>
           <p style="font-size: 16px; line-height: 1.6; color: #555;">
             Thank you for upgrading to the <b>${plan}</b> plan with <b>AutoBrand</b>!  
             Your premium features are now unlocked 🚀.
